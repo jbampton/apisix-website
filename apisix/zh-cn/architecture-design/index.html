@@ -368,6 +368,7 @@ curl http://127.0.0.1:9080/apisix/admin/routes/101 -H 'X-API-KEY: edd1c9f034335f
 <li><code>匹配优先级</code>：优先尝试绝对匹配，若无法命中绝对匹配，再尝试前缀匹配。</li>
 <li><code>任意过滤属性</code>：允许指定任何 Nginx 内置变量作为过滤条件，比如 URL 请求参数、请求头、cookie 等。</li>
 </ul></li>
+<li><code>radixtree_uri_with_parameter</code>: 同 <code>radixtree_uri</code> 但额外有参数匹配的功能。</li>
 <li><code>radixtree_host_uri</code>: 使用 <code>host + uri</code> 作为主索引（基于 <code>radixtree</code> 引擎），对当前请求会同时匹配 host 和 uri，支持的匹配条件与 <code>radixtree_uri</code> 基本一致。</li>
 </ul></li>
 <li><p><code>apisix.router.ssl</code>: SSL 加载匹配路由。</p>

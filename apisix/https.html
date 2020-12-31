@@ -30,13 +30,50 @@
 <ul>
 <li><code>cert</code>: PEM-encoded public certificate of the SSL key pair.</li>
 <li><code>key</code>: PEM-encoded private key of the SSL key pair.</li>
-<li><code>sni</code>: Hostname to associate with this certificate as SNIs. To set this attribute this certificate must have a valid private key associated with it.</li>
+<li><code>snis</code>: Hostname(s) to associate with this certificate as SNIs. To set this attribute this certificate must have a valid private key associated with it.</li>
 </ul>
-<pre><code class="hljs css language-shell">curl http://127.0.0.1:9080/apisix/admin/ssl/1 -H 'X-API-KEY: edd1c9f034335f136f87ad84b625c8f1' -X PUT -d '
+<p>We will use the python script below to simplify the example:</p>
+<pre><code class="hljs css language-python"><span class="hljs-comment">#!/usr/bin/env python</span>
+<span class="hljs-comment"># coding: utf-8</span>
+<span class="hljs-comment"># save this file as ssl.py</span>
+<span class="hljs-keyword">import</span> sys
+<span class="hljs-comment"># sudo pip install requests</span>
+<span class="hljs-keyword">import</span> requests
+
+<span class="hljs-keyword">if</span> len(sys.argv) &lt;= <span class="hljs-number">3</span>:
+    print(<span class="hljs-string">"bad argument"</span>)
+    sys.exit(<span class="hljs-number">1</span>)
+<span class="hljs-keyword">with</span> open(sys.argv[<span class="hljs-number">1</span>]) <span class="hljs-keyword">as</span> f:
+    cert = f.read()
+<span class="hljs-keyword">with</span> open(sys.argv[<span class="hljs-number">2</span>]) <span class="hljs-keyword">as</span> f:
+    key = f.read()
+sni = sys.argv[<span class="hljs-number">3</span>]
+api_key = <span class="hljs-string">"edd1c9f034335f136f87ad84b625c8f1"</span>
+resp = requests.put(<span class="hljs-string">"http://127.0.0.1:9080/apisix/admin/ssl/1"</span>, json={
+    <span class="hljs-string">"cert"</span>: cert,
+    <span class="hljs-string">"key"</span>: key,
+    <span class="hljs-string">"snis"</span>: [sni],
+}, headers={
+    <span class="hljs-string">"X-API-KEY"</span>: api_key,
+})
+print(resp.status_code)
+print(resp.text)
+</code></pre>
+<pre><code class="hljs css language-shell"><span class="hljs-meta">#</span><span class="bash"> create SSL object</span>
+./ssl.py t.crt t.key test.com
+<span class="hljs-meta">
+#</span><span class="bash"> create Router object</span>
+curl http://127.0.0.1:9080/apisix/admin/routes/1 -H 'X-API-KEY: edd1c9f034335f136f87ad84b625c8f1' -X PUT -i -d '
 {
-    "cert": "...",
-    "key": "....",
-    "sni": "test.com"
+    "uri": "/hello",
+    "hosts": ["test.com"],
+    "methods": ["GET"],
+    "upstream": {
+        "type": "roundrobin",
+        "nodes": {
+            "127.0.0.1:1980": 1
+        }
+    }
 }'
 <span class="hljs-meta">
 #</span><span class="bash"> make a <span class="hljs-built_in">test</span></span>
@@ -63,12 +100,20 @@ curl --resolve 'test.com:9443:127.0.0.1' https://test.com:9443/hello  -vvv
 <h3><a class="anchor" aria-hidden="true" id="wildcard-sni"></a><a href="#wildcard-sni" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>wildcard SNI</h3>
 <p>Sometimes, one SSL certificate may contain a wildcard domain like <code>*.test.com</code>,
 that means it can accept more than one domain, eg: <code>www.test.com</code> or <code>mail.test.com</code>.</p>
-<p>Here is an example, please pay attention on the field <code>sni</code>.</p>
-<pre><code class="hljs css language-shell">curl http://127.0.0.1:9080/apisix/admin/ssl/1 -H 'X-API-KEY: edd1c9f034335f136f87ad84b625c8f1' -X PUT -d '
+<p>Here is an example, note that the value we pass as <code>sni</code> is <code>*.test.com</code>.</p>
+<pre><code class="hljs css language-shell">./ssl.py t.crt t.key '*.test.com'
+
+curl http://127.0.0.1:9080/apisix/admin/routes/1 -H 'X-API-KEY: edd1c9f034335f136f87ad84b625c8f1' -X PUT -i -d '
 {
-    "cert": "...",
-    "key": "....",
-    "sni": "*.test.com"
+    "uri": "/hello",
+    "hosts": ["*.test.com"],
+    "methods": ["GET"],
+    "upstream": {
+        "type": "roundrobin",
+        "nodes": {
+            "127.0.0.1:1980": 1
+        }
+    }
 }'
 <span class="hljs-meta">
 #</span><span class="bash"> make a <span class="hljs-built_in">test</span></span>
@@ -94,8 +139,11 @@ curl --resolve 'www.test.com:9443:127.0.0.1' https://www.test.com:9443/hello  -v
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="multiple-domain"></a><a href="#multiple-domain" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>multiple domain</h3>
 <p>If your SSL certificate may contain more than one domain, like <code>www.test.com</code>
-and <code>mail.test.com</code>, then you can more ssl object for each domain, that is a
-most simple way.</p>
+and <code>mail.test.com</code>, then you can add them into the <code>snis</code> array. For example:</p>
+<pre><code class="hljs css language-json">{
+    <span class="hljs-attr">"snis"</span>: [<span class="hljs-string">"www.test.com"</span>, <span class="hljs-string">"mail.test.com"</span>]
+}
+</code></pre>
 <h3><a class="anchor" aria-hidden="true" id="multiple-certificates-for-a-single-domain"></a><a href="#multiple-certificates-for-a-single-domain" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>multiple certificates for a single domain</h3>
 <p>If you want to configure multiple certificate for a single domain, for
 instance, supporting both the

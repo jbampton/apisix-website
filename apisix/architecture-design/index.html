@@ -356,6 +356,7 @@ curl http://127.0.0.1:9080/apisix/admin/routes/101 -H 'X-API-KEY: edd1c9f034335f
 <li><code>match priority</code>: first try absolute match, if you can't hit absolute match, try prefix match.</li>
 <li><code>Any filter attribute</code>: Allows you to specify any Nginx built-in variable as a filter, such as URL request parameters, request headers, cookies, and so on.</li>
 </ul></li>
+<li><code>radixtree_uri_with_parameter</code>: Like <code>radixtree_uri</code> but also support parameter match.</li>
 <li><code>radixtree_host_uri</code>: Use <code>host + uri</code> as the primary index (based on the <code>radixtree</code> engine), matching both host and URL for the current request.</li>
 </ul></li>
 <li><p><code>apisix.router.ssl</code>: SSL loads the matching route.</p>
