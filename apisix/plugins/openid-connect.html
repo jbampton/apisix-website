@@ -53,8 +53,36 @@
 <tr><td>introspection_endpoint_auth_method</td><td>string</td><td>optional</td><td>&quot;client_secret_basic&quot;</td><td></td><td>Authentication method name for token introspection</td></tr>
 <tr><td>public_key</td><td>string</td><td>optional</td><td></td><td></td><td>The public key to verify the token</td></tr>
 <tr><td>token_signing_alg_values_expected</td><td>string</td><td>optional</td><td></td><td></td><td>Algorithm used to sign the token</td></tr>
+<tr><td>set_access_token_header</td><td>boolean</td><td>optional</td><td>true</td><td></td><td>Whether to ensure the access token is set in a request header.</td></tr>
+<tr><td>access_token_in_authorization_header</td><td>boolean</td><td>optional</td><td>false</td><td></td><td>If set to <code>true</code>, ensure that the access token is set in the <code>Authorization</code> header, otherwise use the <code>X-Access-Token</code> header.</td></tr>
+<tr><td>set_id_token_header</td><td>boolean</td><td>optional</td><td>true</td><td></td><td>Whether to ensure the ID token, if available, is set in the <code>X-ID-Token</code> request header.</td></tr>
+<tr><td>set_userinfo_header</td><td>boolean</td><td>optional</td><td>true</td><td></td><td>Whether to ensure the UserInfo object, if available, is set in the <code>X-Userinfo</code> request header.</td></tr>
 </tbody>
 </table>
+<h3><a class="anchor" aria-hidden="true" id="modes-of-operation"></a><a href="#modes-of-operation" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Modes of operation</h3>
+<p>The plugin supports different modes of operation.</p>
+<ol>
+<li><p>It can be configured to just validate an access token that is expected to be present in a request header.
+In this case, requests without a token or where the token is invalid are always rejected. This requires
+<code>bearer_only</code> be set to <code>true</code> and that either an introspection endpoint has been configured through
+<code>introspection_endpoint</code>, or that a public key has been configured through <code>public_key</code>. See the relevant
+sections below.</p></li>
+<li><p>Alternatively, the plugin can also be configured to authenticate a request without a valid token against
+an identity provider by going through the OIDC Authorization Code flow. The plugin then acts as an OIDC Relying Party.
+In this scenario, when the requesting user has authenticated successfully, the plugin will obtain and manage
+an access token and further user claims on behalf of the user in a session cookie. Subsequent requests that
+contain the cookie will use the access token stored in the cookie. In this case, <code>bearer_only</code> must be set to <code>false</code>.</p></li>
+</ol>
+<p>The first option is typically appropriate for service-to-service communication where the requesting side can
+be reasonably expected to obtain and manage a valid access token by itself. The second option is convenient
+to support web browser interaction with endpoints through a human user that may still need to be authenticated
+when accessing for the first time.</p>
+<p>The plugin can also be configured to support both scenarios by setting <code>bearer_only</code> to false, but still configuring
+either an introspection endpoint or a public key. In this case, introspection of an existing token from a request
+header takes precedence over the Relying Party flow. That is, if a request contains an invalid token, the request
+will be rejected without redirecting to the ID provider to obtain a valid token.</p>
+<p>The method used to authenticate a request also affects the headers that can be enforced on the request before
+sending it to upstream. The headers that can be enforced are mentioned below in each relevant section.</p>
 <h3><a class="anchor" aria-hidden="true" id="token-introspection"></a><a href="#token-introspection" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Token Introspection</h3>
 <p>Token introspection helps to validate a request by verifying the token against an Oauth 2 authorization server.
 As prerequisite, you should create a trusted client in the identity server and generate a valid token(JWT) for introspection.
@@ -90,6 +118,7 @@ This route will protect <code>https://httpbin.org/get</code>(echo service) by in
 <p>The following command can be used to access the new route.</p>
 <pre><code class="hljs css language-bash">curl -i -X GET http://127.0.0.1:9080/get -H <span class="hljs-string">"Host: httpbin.org"</span> -H <span class="hljs-string">"Authorization: Bearer {replace_jwt_token}"</span>
 </code></pre>
+<p>In this case, the plugin can enforce that the access token and the UserInfo object get set in respective configured request headers.</p>
 <h4><a class="anchor" aria-hidden="true" id="introspecting-with-public-key"></a><a href="#introspecting-with-public-key" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Introspecting with public key</h4>
 <p>You can also provide the public key of the JWT token to verify the token. In case if you have provided a public key and
 a token introspection endpoint, the public key workflow will be executed instead of verifying with the identity server.
@@ -122,9 +151,43 @@ This method can be used if you want to reduce additional network calls and to sp
   }
 }'</span>
 </code></pre>
+<p>In this case, the plugin can only enforce that the access token gets set in the configured request headers.</p>
+<h4><a class="anchor" aria-hidden="true" id="authentication-through-oidc-relying-party-flow"></a><a href="#authentication-through-oidc-relying-party-flow" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Authentication through OIDC Relying Party flow</h4>
+<p>When an incoming request does not contain an access token in a header, nor in an appropriate session cookie,
+the plugin can act as an OIDC Relying Party and redirect to the authorization endpoint of the identity provider
+to go through the OIDC Authorization Code flow; see <a href="https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth">https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth</a>.
+Once the user has authenticated against the identity provider, the plugin will obtain and manage an access token
+and further information from the identity provider on behalf of the user. The information is currently stored
+in a session cookie that the user agent can submit on subsequent requests. The plugin will recognize the cookie
+and use the information therein to avoid having to go through the flow again.</p>
+<p>The following command adds this mode of operation to a route.</p>
+<pre><code class="hljs css language-bash">curl http://127.0.0.1:9080/apisix/admin/routes/5 -H <span class="hljs-string">'X-API-KEY: edd1c9f034335f136f87ad84b625c8f1'</span> -X PUT -d <span class="hljs-string">'
+{
+  "uri": "/get",
+  "plugins": {
+    "proxy-rewrite": {
+      "scheme": "https"
+    },
+    "openid-connect": {
+      "client_id": "api_six_client_id",
+      "client_secret": "client_secret_code",
+      "discovery": "full_URL_of_the_discovery_endpoint",
+      "bearer_only": false,
+      "realm": "master"
+}
+  },
+  "upstream": {
+    "type": "roundrobin",
+    "nodes": {
+      "httpbin.org:443": 1
+    }
+  }
+}'</span>
+</code></pre>
+<p>In this case, the plugin can enforce that the access token, the ID token, and the UserInfo object get set in respective configured request headers.</p>
 <h2><a class="anchor" aria-hidden="true" id="troubleshooting"></a><a href="#troubleshooting" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Troubleshooting</h2>
-<p>Check/modify the DNS settings (`conf/config.yaml) if APISIX cannot resolve/connect to the identity provider.</p>
-</span></div></article></div><div class="docs-prevnext"></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#name">Name</a></li><li><a href="#attributes">Attributes</a><ul class="toc-headings"><li><a href="#token-introspection">Token Introspection</a></li></ul></li><li><a href="#troubleshooting">Troubleshooting</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"></a><div><h5>ASF</h5><a href="https://www.apache.org/">Foundation</a><a href="https://www.apache.org/licenses/">License</a><a href="http://www.apache.org/events/current-event/">Events</a><a href="https://www.apache.org/security/">Security</a><a href="https://www.apache.org/foundation/sponsorship.html">Sponsorship</a><a href="https://www.apache.org/foundation/thanks.html">Thanks</a></div><div><h5>Community</h5><a href="https://github.com/apache/apisix/issues">GitHub Issue Tracker</a><a href="https://apisix.slack.com/">Slack</a><a href="https://twitter.com/ApacheAPISIX" target="_blank" rel="noreferrer noopener">Twitter</a></div><div><h5>More</h5><a href="/users">User Showcase</a><a href="/blog">Blog</a></div></section><a href="https://www.apache.org/" target="_blank" rel="noreferrer noopener" style="display:block;margin:1em auto;opacity:0.8;transition:opacity 0.15s ease-in-out;text-align:center"><img src="/img/asf_logo_wide_small.png" alt="Apache Software Foundation" style="width:370px;height:64px"/></a><section class="copyright">Copyright © 2019-2020 The Apache Software Foundation. Apache APISIX, APISIX™, Apache, the Apache feather logo, and the Apache APISIX project logo are either registered trademarks or trademarks of the Apache Software Foundation.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
+<p>Check/modify the DNS settings (<code>conf/config.yaml</code>) if APISIX cannot resolve/connect to the identity provider.</p>
+</span></div></article></div><div class="docs-prevnext"></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#name">Name</a></li><li><a href="#attributes">Attributes</a><ul class="toc-headings"><li><a href="#modes-of-operation">Modes of operation</a></li><li><a href="#token-introspection">Token Introspection</a></li></ul></li><li><a href="#troubleshooting">Troubleshooting</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"></a><div><h5>ASF</h5><a href="https://www.apache.org/">Foundation</a><a href="https://www.apache.org/licenses/">License</a><a href="http://www.apache.org/events/current-event/">Events</a><a href="https://www.apache.org/security/">Security</a><a href="https://www.apache.org/foundation/sponsorship.html">Sponsorship</a><a href="https://www.apache.org/foundation/thanks.html">Thanks</a></div><div><h5>Community</h5><a href="https://github.com/apache/apisix/issues">GitHub Issue Tracker</a><a href="https://apisix.slack.com/">Slack</a><a href="https://twitter.com/ApacheAPISIX" target="_blank" rel="noreferrer noopener">Twitter</a></div><div><h5>More</h5><a href="/users">User Showcase</a><a href="/blog">Blog</a></div></section><a href="https://www.apache.org/" target="_blank" rel="noreferrer noopener" style="display:block;margin:1em auto;opacity:0.8;transition:opacity 0.15s ease-in-out;text-align:center"><img src="/img/asf_logo_wide_small.png" alt="Apache Software Foundation" style="width:370px;height:64px"/></a><section class="copyright">Copyright © 2019-2020 The Apache Software Foundation. Apache APISIX, APISIX™, Apache, the Apache feather logo, and the Apache APISIX project logo are either registered trademarks or trademarks of the Apache Software Foundation.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
                 document.addEventListener('keyup', function(e) {
                   if (e.target !== document.body) {
                     return;

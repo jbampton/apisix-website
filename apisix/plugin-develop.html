@@ -199,11 +199,11 @@ In APISIX, only the authentication logic can be run in the rewrite phase. Other 
 <h2><a class="anchor" aria-hidden="true" id="implement-the-logic"></a><a href="#implement-the-logic" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>implement the logic</h2>
 <p>Write the logic of the plugin in the corresponding phase.</p>
 <h2><a class="anchor" aria-hidden="true" id="write-test-case"></a><a href="#write-test-case" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>write test case</h2>
-<p>For functions, write and improve the test cases of various dimensions, do a comprehensive test for your plugin ! The
+<p>For functions, write and improve the test cases of various dimensions, do a comprehensive test for your plugin! The
 test cases of plugins are all in the &quot;<strong>t/plugin</strong>&quot; directory. You can go ahead to find out. APISIX uses
-<a href="https://github.com/openresty/test-nginx">****test-nginx****</a> as the test framework. A test case,.t file is usually
+<a href="https://github.com/openresty/test-nginx">****test-nginx****</a> as the test framework. A test case (.t file) is usually
 divided into prologue and data parts by _<em>data_</em>. Here we will briefly introduce the data part, that is, the part
-of the real test case. For example, the key-auth plugin :</p>
+of the real test case. For example, the key-auth plugin:</p>
 <pre><code class="hljs css language-perl">=== TEST <span class="hljs-number">1</span>: sanity
 --- config
     location /t {
@@ -234,6 +234,8 @@ done
 complete the Lua script, and finally return. The assertion of the use case is response_body return &quot;done&quot;,
 &quot;<strong>no_error_log</strong>&quot; means to check the &quot;<strong>error.log</strong>&quot; of Nginx. There must be no ERROR level record. The log files for the unit test
 are located in the following folder: 't/servroot/logs'.</p>
+<p>The above test case represents a simple scenario. Most scenarios will require multiple steps to validate. To do this, create multiple tests <code>=== TEST 1</code>, <code>=== TEST 2</code>, and so on. These tests will be executed sequentially, allowing you to break down scenarios into a sequence of atomic steps.</p>
+<p>Additionally, there are some convenience testing endpoints which can be found <a href="https://github.com/apache/apisix/blob/master/t/lib/server.lua#L36">here</a>. For example, see <a href="https://github.com/apache/apisix/blob/master/t/plugin/proxy-rewrite.lua">proxy-rewrite</a>. In test 42, the upstream <code>uri</code> is made to redirect <code>/test?new_uri=hello</code> to <code>/hello</code> (which always returns <code>hello world</code>). In test 43, the response body is confirmed to equal <code>hello world</code>, meaning the proxy-rewrite configuration added with test 42 worked correctly.</p>
 <p>Refer the following <a href="/apisix/how-to-build#test">document</a> to setup the testing framework.</p>
 <h3><a class="anchor" aria-hidden="true" id="attach-the-test-nginx-execution-process"></a><a href="#attach-the-test-nginx-execution-process" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Attach the test-nginx execution process:</h3>
 <p>According to the path we configured in the makefile and some configuration items at the front of each <strong>.t</strong> file, the
