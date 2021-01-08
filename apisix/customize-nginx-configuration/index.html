@@ -52,6 +52,8 @@
         set $my "var";
 </span>    <span class="hljs-attr">http_admin_configuration_snippet:</span> <span class="hljs-string">|
         log_format admin "$request_time $pipe";
+</span>    <span class="hljs-attr">http_end_configuration_snippet:</span> <span class="hljs-string">|
+        server_names_hash_bucket_size 128;
 </span>    <span class="hljs-attr">stream_configuration_snippet:</span> <span class="hljs-string">|
         tcp_nodelay off;
 </span><span class="hljs-string">...</span>

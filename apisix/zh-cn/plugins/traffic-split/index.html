@@ -50,15 +50,15 @@
 <tr><td>rules.match</td><td>array[object]</td><td>可选</td><td></td><td></td><td>匹配规则列表</td></tr>
 <tr><td>rules.match.vars</td><td>array[array]</td><td>可选</td><td></td><td></td><td>由一个或多个{var, operator, val}元素组成的列表，类似这样：{{var, operator, val}, {var, operator, val}, ...}}。例如：{&quot;arg_name&quot;, &quot;==&quot;, &quot;json&quot;}，表示当前请求参数 name 是 json。这里的 var 与 Nginx 内部自身变量命名是保持一致，所以也可以使用 request_uri、host 等；对于 operator 部分，目前已支持的运算符有 ==、~=、~~、&gt;、&lt;、in、has 和 ! 。操作符的具体用法请看 <a href="https://github.com/api7/lua-resty-expr#operator-list">lua-resty-expr</a> 的 <code>operator-list</code> 部分。</td></tr>
 <tr><td>rules.weighted_upstreams</td><td>array[object]</td><td>可选</td><td></td><td></td><td>上游配置规则列表。</td></tr>
-<tr><td>rules.weighted_upstreams.upstream_id</td><td>string or integer</td><td>可选</td><td></td><td></td><td>通过上游 id 绑定对应上游(暂不支持)。</td></tr>
-<tr><td>rules.weighted_upstreams.upstream</td><td>object</td><td>可选</td><td></td><td></td><td>上游配置信息。</td></tr>
-<tr><td>rules.weighted_upstreams.upstream.type</td><td>enum</td><td>可选</td><td>roundrobin</td><td>[roundrobin, chash]</td><td>roundrobin 支持权重的负载，chash 一致性哈希，两者是二选一的(目前只支持 <code>roundrobin</code>)。</td></tr>
-<tr><td>rules.weighted_upstreams.upstream.nodes</td><td>object</td><td>可选</td><td></td><td></td><td>哈希表，内部元素的 key 是上游机器地址 列表，格式为地址 + Port，其中地址部 分可以是 IP 也可以是域名，⽐如 192.168.1.100:80、foo.com:80等。 value 则是节点的权重，特别的，当权重 值为 0 有特殊含义，通常代表该上游节点 失效，永远不希望被选中。</td></tr>
-<tr><td>rules.weighted_upstreams.upstream.timeout</td><td>object</td><td>可选</td><td>15</td><td></td><td>设置连接、发送消息、接收消息的超时时间(时间单位：秒，都默认为 15 秒)。</td></tr>
-<tr><td>rules.weighted_upstreams.upstream.pass_host</td><td>enum</td><td>可选</td><td>&quot;pass&quot;</td><td>[&quot;pass&quot;, &quot;node&quot;, &quot;rewrite&quot;]</td><td>pass: 透传客户端请求的 host, node: 不透传客户端请求的 host; 使用 upstream node 配置的 host, rewrite: 使用 upstream_host 配置的值重写 host 。</td></tr>
-<tr><td>rules.weighted_upstreams.upstream.name</td><td>string</td><td>可选</td><td></td><td></td><td>标识上游服务名称、使⽤场景等。</td></tr>
-<tr><td>rules.weighted_upstreams.upstream.upstream_host</td><td>string</td><td>可选</td><td></td><td></td><td>只在 pass_host 配置为 rewrite 时有效。</td></tr>
-<tr><td>rules.weighted_upstreams.weight</td><td>integer</td><td>可选</td><td>weight = 1</td><td></td><td>根据 <code>weight</code> 值做流量划分，多个 weight 之间使用 roundrobin 算法划分。</td></tr>
+<tr><td>weighted_upstreams.upstream_id</td><td>string / integer</td><td>可选</td><td></td><td></td><td>通过上游 id 绑定对应上游(暂不支持)。</td></tr>
+<tr><td>weighted_upstreams.upstream</td><td>object</td><td>可选</td><td></td><td></td><td>上游配置信息。</td></tr>
+<tr><td>upstream.type</td><td>enum</td><td>可选</td><td>roundrobin</td><td>[roundrobin, chash]</td><td>roundrobin 支持权重的负载，chash 一致性哈希，两者是二选一的(目前只支持 <code>roundrobin</code>)。</td></tr>
+<tr><td>upstream.nodes</td><td>object</td><td>可选</td><td></td><td></td><td>哈希表，内部元素的 key 是上游机器地址 列表，格式为地址 + Port，其中地址部 分可以是 IP 也可以是域名，⽐如 192.168.1.100:80、foo.com:80等。 value 则是节点的权重，特别的，当权重 值为 0 有特殊含义，通常代表该上游节点 失效，永远不希望被选中。</td></tr>
+<tr><td>upstream.timeout</td><td>object</td><td>可选</td><td>15</td><td></td><td>设置连接、发送消息、接收消息的超时时间(时间单位：秒，都默认为 15 秒)。</td></tr>
+<tr><td>upstream.pass_host</td><td>enum</td><td>可选</td><td>&quot;pass&quot;</td><td>[&quot;pass&quot;, &quot;node&quot;, &quot;rewrite&quot;]</td><td>pass: 透传客户端请求的 host, node: 不透传客户端请求的 host; 使用 upstream node 配置的 host, rewrite: 使用 upstream_host 配置的值重写 host 。</td></tr>
+<tr><td><code>upstream.name</code></td><td>string</td><td>可选</td><td></td><td></td><td>标识上游服务名称、使⽤场景等。</td></tr>
+<tr><td>upstream.upstream_host</td><td>string</td><td>可选</td><td></td><td></td><td>只在 pass_host 配置为 rewrite 时有效。</td></tr>
+<tr><td>weighted_upstreams.weight</td><td>integer</td><td>可选</td><td>weight = 1</td><td></td><td>根据 <code>weight</code> 值做流量划分，多个 weight 之间使用 roundrobin 算法划分。</td></tr>
 </tbody>
 </table>
 <p>traffic-split 插件主要由 <code>match</code> 和 <code>weighted_upstreams</code> 两部分组成，<code>match</code> 是自定义的条件规则，<code>weighted_upstreams</code> 是 upstream 的配置信息。如果配置 <code>match</code> 和 <code>weighted_upstreams</code> 信息，那么在 <code>match</code> 规则校验通过后，会根据 <code>weighted_upstreams</code> 中的 <code>weight</code> 值；引导插件中各个 upstream 之间的流量比例，否则，所有流量直接到达 <code>route</code> 或 <code>service</code> 上配置的 <code>upstream</code>。当然你也可以只配置 <code>weighted_upstreams</code> 部分，这样会直接根据 <code>weighted_upstreams</code> 中的 <code>weight</code> 值，引导插件中各个 upstream 之间的流量比例。</p>
