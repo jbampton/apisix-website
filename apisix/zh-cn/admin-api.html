@@ -537,7 +537,7 @@ Date: Thu, 26 Dec 2019 08:17:49 GMT
 <tr><td>type</td><td>必需</td><td>枚举</td><td><code>roundrobin</code> 支持权重的负载，<code>chash</code> 一致性哈希，两者是二选一的</td><td><code>roundrobin</code></td><td></td></tr>
 <tr><td>key</td><td>条件必需</td><td>匹配类型</td><td>该选项只有类型是 <code>chash</code> 才有效。根据 <code>key</code> 来查找对应的 node <code>id</code>，相同的 <code>key</code> 在同一个对象中，永远返回相同 id，目前支持的 Nginx 内置变量有 <code>uri, server_name, server_addr, request_uri, remote_port, remote_addr, query_string, host, hostname, arg_***</code>，其中 <code>arg_***</code> 是来自URL的请求参数，<a href="http://nginx.org/en/docs/varindex.html">Nginx 变量列表</a></td><td></td></tr>
 <tr><td>checks</td><td>可选</td><td>health_checker</td><td>配置健康检查的参数，详细可参考<a href="/apisix/health-check">health-check</a></td><td></td></tr>
-<tr><td>retries</td><td>可选</td><td>整型</td><td>使用底层的 Nginx 重试机制将请求传递给下一个上游，默认启用重试且次数为后端 node 数量。如果指定了具体重试次数，它将覆盖默认值。<code>0</code> 代表不启用重试机制</td><td></td></tr>
+<tr><td>retries</td><td>可选</td><td>整型</td><td>使用底层的 Nginx 重试机制将请求传递给下一个上游，默认启用重试且次数为后端可用的 node 数量。如果指定了具体重试次数，它将覆盖默认值。<code>0</code> 代表不启用重试机制。</td><td></td></tr>
 <tr><td>timeout</td><td>可选</td><td>超时时间对象</td><td>设置连接、发送消息、接收消息的超时时间</td><td></td></tr>
 <tr><td>hash_on</td><td>可选</td><td>辅助</td><td><code>hash_on</code> 支持的类型有 <code>vars</code>（Nginx内置变量），<code>header</code>（自定义header），<code>cookie</code>，<code>consumer</code>，默认值为 <code>vars</code></td></tr>
 <tr><td>name</td><td>可选</td><td>辅助</td><td>标识上游服务名称、使用场景等。</td><td></td></tr>
