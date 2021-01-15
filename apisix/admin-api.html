@@ -547,6 +547,7 @@ Date: Thu, 26 Dec 2019 08:17:49 GMT
 <li>when it is <code>header</code>, the <code>key</code> is required. It is equal to &quot;http_<code>key</code>&quot;.</li>
 <li>when it is <code>cookie</code>, the <code>key</code> is required. It is equal to &quot;cookie_<code>key</code>&quot;.</li>
 <li>when it is <code>consumer</code>, the <code>key</code> is optional. The key is the <code>consumer_name</code> set by authentication plugin.</li>
+<li>when it is <code>vars_combinations</code>, the <code>key</code> is required. The <code>key</code> can be any <a href="http://nginx.org/en/docs/varindex.html">Nginx builtin variables</a> combinations, such as <code>$request_uri$remote_addr</code>.</li>
 <li>If there is no value for either <code>hash_on</code> or <code>key</code>, <code>remote_addr</code> will be used as key.</li>
 </ol>
 <p>Config Example:</p>

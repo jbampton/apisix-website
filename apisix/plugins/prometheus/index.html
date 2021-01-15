@@ -99,9 +99,11 @@ these metric data.</p>
 <li><code>etcd reachability</code>: A gauge type with a value of 0 or 1, representing if etcd can be reached by a apisix or not.</li>
 <li><code>Connections</code>: Various Nginx connection metrics like active, reading, writing, and number of accepted connections.</li>
 <li><code>Batch process entries</code>: A gauge type, when we use plugins and the plugin used batch process to send data, such as: sys logger, http logger, sls logger, tcp logger, udp logger and zipkin, then the entries which hasn't been sent in batch process will be counted in the metrics.</li>
+<li><code>Latency</code>: The per service histogram of request time and the overhead added by APISIX (request time - upstream response time).</li>
+<li><code>Info</code>: the information of APISIX node.</li>
 </ul>
 <p>Here is the original metric data of apisix:</p>
-<pre><code class="hljs">$ curl http://<span class="hljs-number">127.0</span>.<span class="hljs-number">0.2</span>:<span class="hljs-number">9080</span>/apisix/prometheus/metrics
+<pre><code class="hljs">$ curl http://<span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span>:<span class="hljs-number">9080</span>/apisix/prometheus/metrics
 <span class="hljs-comment"># HELP apisix_bandwidth Total bandwidth in bytes consumed per service in Apisix</span>
 <span class="hljs-comment"># TYPE apisix_bandwidth counter</span>
 apisix_bandwidth{type=<span class="hljs-string">"egress"</span>,service=<span class="hljs-string">"127.0.0.2"</span>} <span class="hljs-number">183</span>
@@ -138,6 +140,19 @@ apisix_nginx_http_current_connections{<span class="hljs-keyword">state</span>=<s
 <span class="hljs-comment"># HELP apisix_nginx_metric_errors_total Number of nginx-lua-prometheus errors</span>
 <span class="hljs-comment"># TYPE apisix_nginx_metric_errors_total counter</span>
 apisix_nginx_metric_errors_total <span class="hljs-number">0</span>
+<span class="hljs-comment"># HELP apisix_http_latency HTTP request latency in milliseconds per service in APISIX</span>
+<span class="hljs-comment"># TYPE apisix_http_latency histogram</span>
+apisix_http_latency_bucket{type=<span class="hljs-string">"request"</span>,service=<span class="hljs-string">""</span>,consumer=<span class="hljs-string">""</span>,node=<span class="hljs-string">"127.0.0.1"</span>,le=<span class="hljs-string">"00001.0"</span>} <span class="hljs-number">1</span>
+apisix_http_latency_bucket{type=<span class="hljs-string">"request"</span>,service=<span class="hljs-string">""</span>,consumer=<span class="hljs-string">""</span>,node=<span class="hljs-string">"127.0.0.1"</span>,le=<span class="hljs-string">"00002.0"</span>} <span class="hljs-number">1</span>
+...
+<span class="hljs-comment"># HELP apisix_http_overhead HTTP request overhead added by APISIX in milliseconds per service in APISIX</span>
+<span class="hljs-comment"># TYPE apisix_http_overhead histogram</span>
+apisix_http_overhead_bucket{type=<span class="hljs-string">"request"</span>,service=<span class="hljs-string">""</span>,consumer=<span class="hljs-string">""</span>,node=<span class="hljs-string">"127.0.0.1"</span>,le=<span class="hljs-string">"00001.0"</span>} <span class="hljs-number">1</span>
+apisix_http_overhead_bucket{type=<span class="hljs-string">"request"</span>,service=<span class="hljs-string">""</span>,consumer=<span class="hljs-string">""</span>,node=<span class="hljs-string">"127.0.0.1"</span>,le=<span class="hljs-string">"00002.0"</span>} <span class="hljs-number">1</span>
+...
+<span class="hljs-comment"># HELP apisix_node_info Info of APISIX node</span>
+<span class="hljs-comment"># TYPE apisix_node_info gauge</span>
+apisix_node_info{hostname=<span class="hljs-string">"desktop-2022q8f-wsl"</span>} <span class="hljs-number">1</span>
 </code></pre>
 <h2><a class="anchor" aria-hidden="true" id="disable-plugin"></a><a href="#disable-plugin" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Disable Plugin</h2>
 <p>Remove the corresponding json configuration in the plugin configuration to disable <code>prometheus</code>.

@@ -57,7 +57,7 @@ and keep other configurations as default. The configuration in <code>conf/config
 </code></pre>
 <p>Other default configurations can be found in the <code>conf/config-default.yaml</code> file, which is bound to the APISIX source code. <strong>Never</strong> manually modify the <code>conf/config-default.yaml</code> file. If you need to customize any configuration, you should update the <code>conf/config.yaml</code> file.</p>
 <p><strong>Note</strong> <code>APISIX</code> will generate <code>conf/nginx.conf</code> file automatically, so please <em>DO NOT EDIT</em> <code>conf/nginx.conf</code> file too.</p>
-<p><a href="#Table-of-contents">Back to top</a></p>
+<p><a href="#table-of-contents">Back to top</a></p>
 <h2><a class="anchor" aria-hidden="true" id="route"></a><a href="#route" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Route</h2>
 <p>The route matches the client's request by defining rules, then loads and executes the corresponding plugin based on the matching result, and forwards the request to the specified Upstream.</p>
 <p>The route mainly consists of three parts: matching rules (e.g uri, host, remote_addr, etc.), plugin configuration (current-limit &amp; rate-limit, etc.) and upstream information.</p>
@@ -88,7 +88,7 @@ Server: APISIX web server
 </code></pre>
 <p>When we receive a successful response, it indicates that the route was successfully created.</p>
 <p>For specific options of Route, please refer to <a href="/apisix/admin-api#route">Admin API</a>.</p>
-<p><a href="#Table-of-contents">Back to top</a></p>
+<p><a href="#table-of-contents">Back to top</a></p>
 <h2><a class="anchor" aria-hidden="true" id="service"></a><a href="#service" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Service</h2>
 <p>A <code>Service</code> is an abstraction of an API (which can also be understood as a set of Route abstractions). It usually corresponds to the upstream service abstraction. Between <code>Route</code> and <code>Service</code>, usually the relationship of N:1, please see the following image.</p>
 <p><img src="https://apisix.apache.org/images/service-example.png" width="50%" height="50%"></p>
@@ -145,7 +145,7 @@ curl http://127.0.0.1:9080/apisix/admin/routes/101 -H 'X-API-KEY: edd1c9f034335f
 }'
 </code></pre>
 <p>Note: When both Route and Service enable the same plugin, the Route parameter has a higher priority than Service.</p>
-<p><a href="#Table-of-contents">Back to top</a></p>
+<p><a href="#table-of-contents">Back to top</a></p>
 <h2><a class="anchor" aria-hidden="true" id="plugin"></a><a href="#plugin" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Plugin</h2>
 <p><code>Plugin</code> represents the plugin configuration that will be executed during the <code>HTTP</code> request/response lifecycle.</p>
 <p>The <code>Plugin</code> configuration can be bound directly to <code>Route</code> or it can be bound to <code>Service</code> or <code>Consumer</code>. For the configuration of the same plugin, only one copy is valid, and the configuration selection priority is always <code>Consumer</code> &gt; <code>Route</code> &gt; <code>Service</code>.</p>
@@ -178,7 +178,7 @@ curl http://127.0.0.1:9080/apisix/admin/routes/101 -H 'X-API-KEY: edd1c9f034335f
 <p>Not all plugins have specific configuration items. For example, there is no specific configuration item under <code>prometheus</code>. In this case, an empty object identifier can be used.</p>
 <p>If a request is rejected by a plugin, there will be warn level log like <code>ip-restriction exits with http status code 403</code>.</p>
 <p><a href="/apisix/README#plugins">APISIX supported plugin list</a></p>
-<p><a href="#Table-of-contents">Back to top</a></p>
+<p><a href="#table-of-contents">Back to top</a></p>
 <h2><a class="anchor" aria-hidden="true" id="script"></a><a href="#script" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Script</h2>
 <p><code>Script</code> represents a script that will be executed during the <code>HTTP</code> request/response life cycle.</p>
 <p>The <code>Script</code> configuration can be directly bound to the <code>Route</code>.</p>
@@ -343,7 +343,7 @@ curl http://127.0.0.1:9080/apisix/admin/routes/101 -H 'X-API-KEY: edd1c9f034335f
 <p>The client requests with header <code>Content-Type</code>:</p>
 <pre><code class="hljs css language-shell"> curl http://127.0.0.1:9080/hash_on_header -H 'X-API-KEY: edd1c9f034335f136f87ad84b625c8f1' -H "Content-Type: application/json"
 </code></pre>
-<p><a href="#Table-of-contents">Back to top</a></p>
+<p><a href="#table-of-contents">Back to top</a></p>
 <h2><a class="anchor" aria-hidden="true" id="router"></a><a href="#router" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Router</h2>
 <p>A distinguishing feature of APISIX from other API gateways is that it allows users to choose different routers to better match free services, making the best choice between performance and freedom.</p>
 <p>Set the route that best suits your business needs in the local configuration <code>conf/config.yaml</code>.</p>
@@ -365,7 +365,7 @@ curl http://127.0.0.1:9080/apisix/admin/routes/101 -H 'X-API-KEY: edd1c9f034335f
 <li><code>radixtree_sni</code>: (Default) Use <code>SNI</code> (Server Name Indication) as the primary index (based on the radixtree engine).</li>
 </ul></li>
 </ul>
-<p><a href="#Table-of-contents">Back to top</a></p>
+<p><a href="#table-of-contents">Back to top</a></p>
 <h2><a class="anchor" aria-hidden="true" id="consumer-1"></a><a href="#consumer-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Consumer</h2>
 <p>For the API gateway, it is usually possible to identify a certain type of requester by using a domain name such as a request domain name, a client IP address, etc., and then perform plugin filtering and forward the request to the specified upstream, but sometimes the depth is insufficient.</p>
 <p><img src="https://apisix.apache.org/images/consumer-who.png" width="50%" height="50%"></p>
@@ -462,7 +462,7 @@ HTTP/1.1 403
 ...
 
 </code></pre>
-<p><a href="#Table-of-contents">Back to top</a></p>
+<p><a href="#table-of-contents">Back to top</a></p>
 <h2><a class="anchor" aria-hidden="true" id="global-rule"></a><a href="#global-rule" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Global Rule</h2>
 <p><a href="#Plugin">Plugin</a> just can be binded to <a href="#Service">Service</a> or <a href="#Route">Route</a>, if we want a <a href="#Plugin">Plugin</a> work on all requests, how to do it?
 We can register a global <a href="#Plugin">Plugin</a> with <code>GlobalRule</code>:</p>
@@ -486,7 +486,7 @@ We can register a global <a href="#Plugin">Plugin</a> with <code>GlobalRule</cod
 <p>we can list all <code>GlobalRule</code> via admin api as below:</p>
 <pre><code class="hljs css language-shell">curl https://{apisix_listen_address}/apisix/admin/global_rules
 </code></pre>
-<p><a href="#Table-of-contents">Back to top</a></p>
+<p><a href="#table-of-contents">Back to top</a></p>
 <h2><a class="anchor" aria-hidden="true" id="debug-mode"></a><a href="#debug-mode" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Debug mode</h2>
 <h3><a class="anchor" aria-hidden="true" id="basic-debug-mode"></a><a href="#basic-debug-mode" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Basic Debug Mode</h3>
 <p>Enable basic debug mode just by setting <code>apisix.enable_debug = true</code> in <code>conf/config.yaml</code> file.</p>
@@ -537,7 +537,7 @@ subsystem, the information will be logged in the error log with <code>warn</code
 
 <span class="hljs-comment">#END</span>
 </code></pre>
-<p><a href="#Table-of-contents">Back to top</a></p>
+<p><a href="#table-of-contents">Back to top</a></p>
 </span></div></article></div><div class="docs-prevnext"></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#table-of-contents">Table of Contents</a></li><li><a href="#apisix">APISIX</a><ul class="toc-headings"><li><a href="#plugin-loading-process">Plugin Loading Process</a></li><li><a href="#plugin-hierarchy-structure">Plugin Hierarchy Structure</a></li></ul></li><li><a href="#apisix-config">APISIX Config</a></li><li><a href="#route">Route</a></li><li><a href="#service">Service</a></li><li><a href="#plugin">Plugin</a></li><li><a href="#script">Script</a></li><li><a href="#upstream">Upstream</a><ul class="toc-headings"><li><a href="#configuration">Configuration</a></li></ul></li><li><a href="#router">Router</a></li><li><a href="#consumer-1">Consumer</a></li><li><a href="#global-rule">Global Rule</a></li><li><a href="#debug-mode">Debug mode</a><ul class="toc-headings"><li><a href="#basic-debug-mode">Basic Debug Mode</a></li><li><a href="#advanced-debug-mode">Advanced Debug Mode</a></li></ul></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/" class="nav-home"></a><div><h5>ASF</h5><a href="https://www.apache.org/">Foundation</a><a href="https://www.apache.org/licenses/">License</a><a href="https://www.apache.org/events/">Events</a><a href="https://www.apache.org/security/">Security</a><a href="https://www.apache.org/foundation/sponsorship.html">Sponsorship</a><a href="https://www.apache.org/foundation/thanks.html">Thanks</a></div><div><h5>Community</h5><a href="https://github.com/apache/apisix/issues">GitHub Issue Tracker</a><a href="https://apisix.slack.com/">Slack</a><a href="https://twitter.com/ApacheAPISIX" target="_blank" rel="noreferrer noopener">Twitter</a></div><div><h5>More</h5><a href="/users">User Showcase</a><a href="/blog">Blog</a></div></section><a href="https://www.apache.org/" target="_blank" rel="noreferrer noopener" style="display:block;margin:1em auto;opacity:0.8;transition:opacity 0.15s ease-in-out;text-align:center"><img src="/img/asf_logo_wide_small.png" alt="Apache Software Foundation" style="width:370px;height:64px"/></a><section class="copyright">Copyright © 2019-2021 The Apache Software Foundation. Apache APISIX, APISIX™, Apache, the Apache feather logo, and the Apache APISIX project logo are either registered trademarks or trademarks of the Apache Software Foundation.</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>window.twttr=(function(d,s, id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src='https://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js, fjs);t._e = [];t.ready = function(f) {t._e.push(f);};return t;}(document, 'script', 'twitter-wjs'));</script><script>
                 document.addEventListener('keyup', function(e) {
                   if (e.target !== document.body) {
